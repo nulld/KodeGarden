@@ -67,7 +67,7 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Sources/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		//await cache(connection, sha);
+		await cache(connection, sha);
 		return sha;
 	}
 

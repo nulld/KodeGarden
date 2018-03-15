@@ -17,6 +17,7 @@ wsapp.ws('/', (connection, request) => {
 	connection.on('message', async message => {
 		if (typeof message === 'string') {
 			let messagedata = JSON.parse(message);
+			//FIXME: loadProject never received?
 			if (messagedata.func === 'loadProject') {
 				const sha = messagedata.id;
 				await cache(connection, sha);
@@ -24,6 +25,13 @@ wsapp.ws('/', (connection, request) => {
 				connection.send(JSON.stringify({callid: messagedata.callid, ret: true}));
 			}
 			else {
+				if (connection.project == null)
+				{
+					const sha = messagedata.id;
+					connection.project = new Project(sha);
+					await cache(connection, messagedata.id);
+				}
+				
 				let ret = await connection.project[messagedata.func](connection, messagedata);
 				connection.send(JSON.stringify({callid: messagedata.callid, ret: ret}));
 			}
